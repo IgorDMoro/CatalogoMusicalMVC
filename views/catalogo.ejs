@@ -62,6 +62,15 @@
                 <input type="file" id="capa" name="capa" accept="image/*" required>
             </div>
             <div>
+                <label for="generos">Gêneros:</label>
+                <select id="generos" name="generos" multiple>
+                    <% generos.forEach(genero => { %>
+                        <option value="<%= genero.id %>"><%= genero.nome %></option>
+                    <% }); %>
+                </select>
+                <br>
+                <label for="novoGenero">Ou crie um novo gênero:</label>
+                <input type="text" id="novoGenero" name="novoGenero" placeholder="Novo gênero" />
                 <label for="artista">Artista:</label>
                 <select id="artista" name="ArtistaId">
                     <option value="">Selecione um Artista</option>
