@@ -12,21 +12,25 @@ module.exports = (sequelize, DataTypes) => {
 
       // Um Disco pode estar relacionado a vários Gêneros
       Disco.belongsToMany(models.Genero, {
-        through: 'DiscoGeneros',
-        as: 'generos',
-        foreignKey: 'DiscoId',
-        otherKey: 'GeneroId'
+        through: 'DiscoGeneros', // Nome da tabela pivot
+        as: 'generos',          // Alias usado nos includes
+        foreignKey: 'DiscoId',  // Nome da FK na tabela DiscoGeneros
+        otherKey: 'GeneroId'    // Nome da FK para Genero na tabela DiscoGeneros
       });
     }
   }
-  Disco.init({
-    titulo: DataTypes.STRING,
-    ano_lancamento: DataTypes.INTEGER,
-    capa: DataTypes.STRING,
-    ArtistaId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Disco',
-  });
+
+  Disco.init(
+    {
+      titulo: DataTypes.STRING,
+      ano_lancamento: DataTypes.INTEGER,
+      capa: DataTypes.STRING,
+      ArtistaId: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: 'Disco',
+    }
+  );
   return Disco;
 };

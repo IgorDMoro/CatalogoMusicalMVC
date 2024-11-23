@@ -14,18 +14,23 @@ class DiscoController {
 
             // Buscar todos os artistas para preencher o formulário
             const artistas = await Artista.findAll();
+            
+            // Buscar todos os gêneros para preencher o formulário
+            const generos = await Genero.findAll();
 
             // Verificar se a query string contém parâmetros de sucesso ou erro
             const successMessage = req.query.success ? 'Disco adicionado com sucesso!' : null;
             const errorMessage = req.query.error ? 'Ocorreu um erro ao adicionar o disco.' : null;
 
-            // Renderizar a página 'catalogo' com discos, artistas e as mensagens de sucesso ou erro
-            res.render('catalogo', { discos, artistas, successMessage, errorMessage });
+            // Renderizar a página 'catalogo' com discos, artistas, gêneros e mensagens de sucesso ou erro
+            res.render('catalogo', { discos, artistas, generos, successMessage, errorMessage });
         } catch (error) {
             // Em caso de erro, redirecionar com uma mensagem de erro
             res.redirect('/discos?error=true');
         }
     }
+
+
     
 
     static async obterDisco(req, res) {
@@ -49,7 +54,8 @@ class DiscoController {
 
     static criarDisco = [upload.single('capa'), async (req, res) => {
         try {
-            const { titulo, ano_lancamento, ArtistaId, novoArtista } = req.body;
+            const { titulo, ano_lancamento, ArtistaId, novoArtista, generosSelecionados, novoGenero } = req.body;
+
     
             let artistaId;
     
@@ -69,6 +75,19 @@ class DiscoController {
                 capa: req.file ? `/uploads/${req.file.filename}` : null,  // Verifica se o arquivo foi enviado
                 ArtistaId: artistaId, // Associa o artista ao disco
             });
+
+
+            if (novoGenero) {
+                const novoGeneroCriado = await Genero.create({ nome: novoGenero });
+                await novoDisco.addGenero(novoGeneroCriado); // Adiciona o gênero recém-criado ao disco
+        }
+
+        // Vincula os gêneros selecionados (se houver) ao disco
+        if (generosSelecionados) {
+            const generoIds = Array.isArray(generosSelecionados) ? generosSelecionados : [generosSelecionados];
+            const generos = await Genero.findAll({ where: { id: generoIds } });
+            await novoDisco.addGeneros(generos); // Relaciona os gêneros ao disco
+        }
     
             // Redireciona para a página de catálogo com uma mensagem de sucesso
             res.redirect('/discos?success=true');
