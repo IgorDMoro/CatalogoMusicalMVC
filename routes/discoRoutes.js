@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const DiscoController = require('../controllers/DiscoController');
+const DiscoController = require('../controllers/discoController');
 
 // Listar todos os discos
 router.get('/', DiscoController.listarDiscos);

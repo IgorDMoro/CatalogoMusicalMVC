@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const GeneroController = require('../controllers/GeneroController');
+const GeneroController = require('../controllers/generoController');
 
 router.get('/', GeneroController.listarGeneros);
 router.get('/:id', GeneroController.obterGenero);

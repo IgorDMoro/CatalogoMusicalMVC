@@ -9,26 +9,6 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-const express = require('express');
-const router = express.Router();
-
-
-router.get('/', (req, res) => {
-  res.render('home');
-});
-
-const discoRoutes = require('./discoRoutes');
-const artistaRoutes = require('./artistaRoutes');
-const generoRoutes = require('./generoRoutes');
-const faixaRoutes = require('./faixaRoutes');
-
-router.use('/discos', discoRoutes);
-router.use('/artistas', artistaRoutes);
-router.use('/generos', generoRoutes);
-router.use('/faixas', faixaRoutes);
-
-module.exports = router;
-
 
 let sequelize;
 if (config.use_env_variable) {

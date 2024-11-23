@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const port = 3000;
 
 // Configuração do EJS como motor de views
 app.set('view engine', 'ejs');
@@ -33,5 +34,5 @@ app.use('/generos', generoRoutes);
 // Inicializa o servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Servidor rodando na porta http://localhost:${PORT}`);
 });

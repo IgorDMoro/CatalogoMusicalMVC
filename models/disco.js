@@ -1,20 +1,22 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Disco extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      Disco.associate = function(models) {
-        Disco.belongsTo(models.Artista, { foreignKey: 'ArtistaId' });
-        Disco.hasMany(models.Faixa, { foreignKey: 'DiscoId' });
-        Disco.belongsToMany(models.Genero, { through: 'DiscoGeneros' });
-     };
+      // Um Disco pertence a um Artista
+      Disco.belongsTo(models.Artista, { foreignKey: 'ArtistaId', as: 'artista' });
+
+      // Um Disco tem várias Faixas
+      Disco.hasMany(models.Faixa, { foreignKey: 'DiscoId', as: 'faixas' });
+
+      // Um Disco pode estar relacionado a vários Gêneros
+      Disco.belongsToMany(models.Genero, {
+        through: 'DiscoGeneros',
+        as: 'generos',
+        foreignKey: 'DiscoId',
+        otherKey: 'GeneroId'
+      });
     }
   }
   Disco.init({

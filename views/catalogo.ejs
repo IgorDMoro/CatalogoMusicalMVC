@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/catalogo.css">
+    <title>Catálogo de Discos</title>
+</head>
+<body>
+    <header>
+        <a href="/">Home</a>
+        <a href="/discos">Catálogo de Discos</a>
+        <a href="/discos/gerenciar">Gerenciar Discos</a>
+    </header>
+
+    <!-- Exibindo mensagens de sucesso ou erro -->
+    <main>
+        <% if (successMessage) { %>
+            <div class="success-message">
+                <%= successMessage %>
+            </div>
+        <% } %>
+
+        <% if (errorMessage) { %>
+            <div class="error-message">
+                <%= errorMessage %>
+            </div>
+        <% } %>
+
+        <h1>Catálogo de Discos</h1>
+        <% if (discos.length > 0) { %>
+            <% discos.forEach(disco => { %>
+                <div class="disco">
+                    <img src="<%= disco.capa %>" alt="Capa do disco">
+                    <h3><%= disco.titulo %></h3>
+                    <p><strong>Artista:</strong> <%= disco.artista ? disco.artista.nome : 'Desconhecido' %></p>
+                    <p><strong>Ano de Lançamento:</strong> <%= disco.ano_lancamento %></p>
+                    <p><strong>Gêneros:</strong> 
+                        <%= disco.generos.map(g => g.nome).join(', ') %>
+                    </p>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>Não há discos cadastrados no momento.</p>
+        <% } %>
+    </main>
+
+    <!-- Formulário para adicionar disco -->
+    <div class="form-container">
+        <h2>Adicionar Novo Disco</h2>
+        <form action="/discos" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="titulo">Título do Disco:</label>
+                <input type="text" id="titulo" name="titulo" required>
+            </div>
+            <div>
+                <label for="ano_lancamento">Ano de Lançamento:</label>
+                <input type="number" id="ano_lancamento" name="ano_lancamento" required>
+            </div>
+            <div>
+                <label for="capa">Capa do Disco:</label>
+                <input type="file" id="capa" name="capa" accept="image/*" required>
+            </div>
+            <div>
+                <label for="artista">Artista:</label>
+                <select id="artista" name="ArtistaId">
+                    <option value="">Selecione um Artista</option>
+                    <% artistas.forEach(artista => { %>
+                        <option value="<%= artista.id %>"><%= artista.nome %></option>
+                    <% }); %>
+                </select>
+                <p>Ou</p>
+                <input type="text" id="novoArtista" name="novoArtista" placeholder="Digite o nome do novo artista (se necessário)">
+            </div>
+            <button type="submit">Adicionar Disco</button>
+        </form>
+    </div>
+</body>
+</html>
