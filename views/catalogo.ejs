@@ -36,6 +36,49 @@
           <%= disco.generos && disco.generos.length > 0 ? disco.generos.map(g =>
           g.nome).join(', ') : 'Sem gêneros associados' %>
         </p>
+        <form action="/discos/<%= disco.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+          <!-- Outros campos -->
+          <div>
+            <label for="faixas">Faixas:</label>
+            <% if (disco.faixas && disco.faixas.length > 0) { %>
+              <% disco.faixas.forEach((faixa) => { %>
+                <div>
+                  <input type="text" name="faixas[]" value="<%= faixa.titulo %>" required />
+                </div>
+              <% }); %>
+            <% } else { %>
+              <div>
+                <input type="text" name="faixas[]" placeholder="Nova Faixa" required />
+              </div>
+            <% } %>
+            <div id="nova-faixa-container"></div>
+            <button type="button" onclick="adicionarNovaFaixa()">Adicionar nova faixa</button>
+          </div>
+          <button type="submit">Salvar Alterações</button>
+        </form>
+        
+        <script>
+          function adicionarNovaFaixa() {
+            const container = document.getElementById('nova-faixa-container');
+            const novaFaixaInput = document.createElement('div');
+            novaFaixaInput.innerHTML = `
+              <input type="text" name="faixas[]" placeholder="Nova Faixa" required />
+            `;
+            container.appendChild(novaFaixaInput);
+          }
+        </script>
+        
+    <!-- Botão de exclusão -->
+  <form action="/discos/<%= disco.id %>/deletar?_method=DELETE" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este disco?')">
+    <button type="submit">Excluir</button>
+</form>
+
+  <!-- Link para edição -->
+  <a href="/discos/<%= disco.id %>/editar">
+    <button type="button">Editar</button>
+  </a>
+</div>
+
       </div>
       <% }) %> <% } else { %>
       <p>Não há discos cadastrados no momento.</p>
@@ -98,5 +141,13 @@
         <button type="submit">Adicionar Disco</button>
       </form>
     </div>
+
+    <form action="/discos/buscar" method="GET">
+      <input type="text" name="titulo" placeholder="Título" />
+      <input type="text" name="artista" placeholder="Artista" />
+      <input type="text" name="genero" placeholder="Gênero" />
+      <button type="submit">Buscar</button>
+    </form>
+
   </body>
 </html>

@@ -14,6 +14,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+const methodOverride = require('method-override');
+
+// Configurar method-override para processar `_method` na query ou body
+app.use(methodOverride('_method'));
+
 // Importar rotas
 const artistaRoutes = require('./routes/artistaRoutes');
 const discoRoutes = require('./routes/discoRoutes');

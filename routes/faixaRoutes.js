@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const FaixaController = require('../controllers/FaixaController');
+const FaixaController = require('../controllers/faixaController');
 
 router.get('/', FaixaController.listarFaixas);
 router.get('/:id', FaixaController.obterFaixa);

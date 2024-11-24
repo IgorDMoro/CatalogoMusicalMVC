@@ -30,8 +30,89 @@ class DiscoController {
         }
     }
 
-
+    static async buscarDiscos(req, res) {
+        try {
+            const { titulo, artista, genero } = req.query;
     
+            // Construir a consulta dinâmica
+            const where = {};
+            if (titulo) where.titulo = { [Op.like]: `%${titulo}%` };
+    
+            const include = [];
+            if (artista) {
+                include.push({
+                    model: Artista,
+                    as: 'artista',
+                    where: { nome: { [Op.like]: `%${artista}%` } },
+                });
+            }
+            if (genero) {
+                include.push({
+                    model: Genero,
+                    as: 'generos',
+                    where: { nome: { [Op.like]: `%${genero}%` } },
+                });
+            }
+    
+            const discos = await Disco.findAll({
+                where,
+                include,
+            });
+    
+            res.render('catalogo', { discos });
+        } catch (error) {
+            res.status(500).send('Erro ao buscar discos.');
+        }
+    }
+    
+    static async mostrarEdicao(req, res) {
+        try {
+            const { id } = req.params;
+            const disco = await Disco.findByPk(id, {
+                include: ['artista', 'generos'],
+            });
+    
+            const artistas = await Artista.findAll();
+            const generos = await Genero.findAll();
+    
+            res.render('editarDisco', { disco, artistas, generos });
+        } catch (error) {
+            res.status(500).send('Erro ao carregar edição.');
+        }
+    }
+    
+    static async editarDisco(req, res) {
+        try {
+            const { id } = req.params;
+            const { titulo, ano_lancamento, ArtistaId, generosSelecionados, faixas } = req.body;
+    
+            const disco = await Disco.findByPk(id);
+    
+            if (!disco) return res.status(404).send('Disco não encontrado.');
+    
+            await disco.update({ titulo, ano_lancamento, ArtistaId });
+    
+            if (generosSelecionados) {
+                const generos = await Genero.findAll({ where: { id: generosSelecionados } });
+                await disco.setGeneros(generos);
+            }
+
+             // Atualizar as faixas
+    if (faixas && faixas.length > 0) {
+        const faixasArray = Array.isArray(faixas) ? faixas : [faixas];
+  
+        // Apagar faixas antigas e criar novas
+        await Faixa.destroy({ where: { DiscoId: disco.id } });
+        for (const faixaTitulo of faixasArray) {
+          await Faixa.create({ titulo: faixaTitulo, DiscoId: disco.id });
+        }
+      }
+    
+            res.redirect('/discos');
+        } catch (error) {
+            res.status(500).send('Erro ao editar disco.');
+        }
+    }
 
     static async obterDisco(req, res) {
         try {
@@ -89,6 +170,15 @@ class DiscoController {
             await novoDisco.addGeneros(generos); // Relaciona os gêneros ao disco
         }
     
+         // Adicionar as faixas ao disco
+            if (faixas && faixas.length > 0) {
+         const faixasArray = Array.isArray(faixas) ? faixas : [faixas];
+            for (const faixaTitulo of faixasArray) {
+          await Faixa.create({ titulo: faixaTitulo, DiscoId: novoDisco.id });
+        }
+      }
+  
+        
             // Redireciona para a página de catálogo com uma mensagem de sucesso
             res.redirect('/discos?success=true');
         } catch (error) {
@@ -116,15 +206,19 @@ class DiscoController {
     static async deletarDisco(req, res) {
         try {
             const { id } = req.params;
+            console.log('ID recebido para exclusão:', id); // Log do ID recebido
+    
             const deleted = await Disco.destroy({ where: { id } });
             if (!deleted) {
                 return res.status(404).json({ error: 'Disco não encontrado' });
             }
             res.status(200).json({ message: 'Disco deletado com sucesso' });
         } catch (error) {
+            console.error('Erro ao deletar disco:', error);
             res.status(500).json({ error: 'Erro ao deletar disco', details: error.message });
         }
     }
+    
 }
 
 module.exports = DiscoController;
